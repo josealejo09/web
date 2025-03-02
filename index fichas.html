@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador De Fichas Mikrotik Fix Wireless</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 10px;
+            background-color: #f0f0f0;
+        }
+
+        h2 {
+            color: #333333;
+        }
+
+        button.red,
+        button.green,
+        button.blue,
+        button.yellow,
+        button.purple {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: white;
+            transition: filter 0.3s;
+            margin: 5px;
+        }
+
+        button.red {
+            background-color: #E74C3C;
+        }
+
+        button.green {
+            background-color: #4CAF50;
+        }
+
+        button.blue {
+            background-color: #3498DB;
+        }
+
+        button.yellow {
+            background-color: #F39C12;
+        }
+
+        button.purple {
+            background-color: #9b59b6;
+        }
+
+        button:hover {
+            filter: brightness(80%);
+            color: #ffffff;
+        }
+
+        #generated-list {
+            margin-top: 10px;
+            width: 100%;
+            height: 100px;
+            resize: none;
+        }
+
+        #pin-length-label {
+            margin-top: 5px;
+        }
+
+        .group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .group label {
+            width: 20%;
+            font-weight: bold;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .group input,
+        .group select,
+        .group input[type="text"] {
+            width: 15%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .time-group label {
+            width: 8%;
+            text-align: right;
+            margin-right: 5px;
+        }
+
+        .time-group input {
+            width: 10%;
+        }
+
+        .code-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .code-card {
+            margin: 5px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: box-shadow 0.3s;
+            page-break-inside: avoid;
+            cursor: pointer;
+            background-color: #ffffff;
+        }
+
+        .code-card:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .code {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333333;
+        }
+
+        #copyright {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        @media print {
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <B><FONT COLOR="red"><H1>Fix Wireless</H1></FONT>
+    <B><FONT COLOR="green"><H2>Generador De Fichas Mikrotik Oficial</H2></FONT>
+    <div class="group">
+        <label for="quantity"><strong>Cantidad de Códigos🎟️:</strong></label>
+        <input type="number" id="quantity" name="quantity" min="0" value="0">
+    </div>
+
+    <div class="group">
+        <label for="code-type"><strong>Tipo de Código🎫:</strong></label>
+        <select id="code-type" name="code-type">
+            <option value="pin">Sólo código PIN</option>
+            <option value="username-password">Nombre de usuario y contraseña</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label for="profile"><strong>Perfil:</strong></label>
+        <select id="profile" name="profile" onchange="handleProfileChange()">
+            <option value="TiempoCorrido">TiempoCorrido</option>
+            <option value="TiempoPausado">TiempoPausado</option>
+            <option value="Tiempo-X-Megas">Tiempo-X-Megas</option>
+            <option value="Personalizado">Personalizado</option>
+        </select>
+    </div>
+
+    <div class="group" id="custom-profile" style="display: none;">
+        <label for="custom-profile-input"><strong>Perfil Personalizado:</strong></label>
+        <input type="text" id="custom-profile-input" name="custom-profile-input" style="width: 60%; margin-top: 5px;" placeholder="Ingrese el nombre del perfil">
+    </div>
+
+    <div class="group">
+        <label for="char-type"><strong>Tipo de Caracteres:</strong></label>
+        <select id="char-type" name="char-type" onchange="handleCharTypeChange()">
+            <option value="numeric">Números (0-9)</option>
+            <option value="alpha">Letras (A-Za-z)</option>
+            <option value="alphanumeric">Alfanuméricos (A-Za-z0-9)</option>
+            <option value="custom">Personalizado</option>
+        </select>
+    </div>
+
+    <div class="group" id="custom-chars" style="display: none;">
+        <label for="custom-chars-input"><strong>Caracteres Personalizados:</strong></label>
+        <input type="text" id="custom-chars-input" name="custom-chars-input" placeholder="A3B2C5, abcdef, 123456, ..." style="width: 60%;">
+    </div>
+
+    <div class="group">
+        <label for="hotspot-server"><strong>Hotspot Server:</strong></label>
+        <input type="text" id="hotspot-server" name="hotspot-server" value="all" placeholder="Ingrese el nombre del servidor">
+    </div>
+
+    <div class="group time-group">
+        <label for="uptime-days"><strong>Días:</strong></label>
+        <input type="number" id="uptime-days" name="uptime-days" min="0" value="0">
+        <label for="uptime-hours"><strong>Horas:</strong></label>
+        <input type="number" id="uptime-hours" name="uptime-hours" min="0" value="0">
+        <label for="uptime-minutes"><strong>Minutos:</strong></label>
+        <input type="number" id="uptime-minutes" name="uptime-minutes" min="0" value="0">
+        <label for="uptime-seconds"><strong>Segundos:</strong></label>
+        <input type="number" id="uptime-seconds" name="uptime-seconds" min="0" value="0">
+    </div>
+
+    <div class="group">
+        <label for="traffic-limit"><strong>Límite de Tráfico (Megas):</strong></label>
+        <input type="number" id="traffic-limit" name="traffic-limit" min="0" value="0">
+    </div>
+
+    <div class="group">
+        <label for="pin-length"><strong>Longitud del PIN:</strong> <span id="pin-length-label">4</span></label>
+        <input type="range" id="pin-length" name="pin-length" min="4" max="10" value="4">
+    </div>
+
+    <div class="group">
+        <label for="price"><strong>Precio de la Ficha:</strong></label>
+        <input type="number" id="price" name="price" min="0" step="0.01" value="0">
+    </div>
+
+    <div class="group" id="message-field-group">
+        <label for="message-field"><strong>Mensaje Adicional:</strong></label>
+        <input type="text" id="message-field" name="message-field" placeholder="Ingrese un mensaje adicional" style="width: 60%;">
+    </div>
+
+    <button class="red" onclick="generateCodes()"><strong>Generar Códigos</strong></button>
+    <button class="green" onclick="copyToClipboard()"><strong>Copiar Script</strong></button>
+    <button class="blue" onclick="downloadScript()"><strong>Descargar Script</strong></button>
+    <button class="yellow" onclick="printCodes()"><strong>Imprimir Códigos</strong></button>
+
+    <!-- Nuevo botón "Limpiar Todo" -->
+    <button class="purple" onclick="limpiarTodo()"><strong>Limpiar Todo</strong></button>
+
+    <h3>Script MikroTik Generado:</h3>
+    <textarea id="generated-list" readonly></textarea>
+
+    <div id="code-container" class="code-container"></div>
+
+    <div id="copyright">
+        <p>© copyright Fix Wireless 2024</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        function handleProfileChange() {
+            const profileSelect = $('#profile');
+            const customProfile = $('#custom-profile');
+
+            if (profileSelect.val() === 'Personalizado') {
+                customProfile.show();
+            } else {
+                customProfile.hide();
+                $('#custom-profile-input').val('');
+            }
+        }
+
+        function handleCharTypeChange() {
+            const charTypeSelect = $('#char-type');
+            const customCharsGroup = $('#custom-chars');
+
+            if (charTypeSelect.val() === 'custom') {
+                customCharsGroup.show();
+            } else {
+                customCharsGroup.hide();
+                $('#custom-chars-input').val('');
+            }
+        }
+
+        function generateCode(pinLength, charType, customChars) {
+            let characters = '';
+
+            switch (charType) {
+                case 'numeric':
+                    characters = '0123456789';
+                    break;
+                case 'alpha':
+                    characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    break;
+                case 'alphanumeric':
+                    characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    break;
+                case 'custom':
+                    characters = customChars;
+                    break;
+                default:
+                    characters = '0123456789';
+            }
+
+            let code = '';
+            for (let i = 0; i < pinLength; i++) {
+                code += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            return code;
+        }
+
+        function generateCodes() {
+            const generatedList = $('#generated-list');
+            const quantity = $('#quantity').val();
+            const codeType = $('#code-type').val();
+            const profileSelect = $('#profile');
+            const customProfile = $('#custom-profile');
+            const customProfileInput = $('#custom-profile-input');
+            const charTypeSelect = $('#char-type');
+            const customCharsGroup = $('#custom-chars');
+            const customCharsInput = $('#custom-chars-input');
+            const hotspotServer = $('#hotspot-server').val().trim() || 'all';
+            const trafficLimit = $('#traffic-limit').val().trim();
+            const days = $('#uptime-days').val();
+            const hours = $('#uptime-hours').val();
+            const minutes = $('#uptime-minutes').val();
+            const seconds = $('#uptime-seconds').val();
+            const uptime = `${days}d ${hours}:${minutes}:${seconds}`;
+            const pinLengthInput = $('#pin-length');
+            const pinLengthLabel = $('#pin-length-label');
+            const priceInput = $('#price');
+            const messageField = $('#message-field');
+            const codeContainer = $('#code-container');
+            let list = '';
+
+            const pinLength = pinLengthInput.val();
+            pinLengthLabel.text(pinLength);
+
+            codeContainer.empty();
+
+            for (let i = 0; i < quantity; i++) {
+                const code = generateCode(pinLength, charTypeSelect.val(), customCharsInput.val());
+                let profileName;
+
+                if (profileSelect.val() === 'Personalizado') {
+                    profileName = customProfileInput.val().trim() || 'defaultProfile';
+                } else {
+                    profileName = profileSelect.val();
+                }
+
+                let command = `/ip hotspot user add name="${code}" profile="${profileName}" server="${hotspotServer}" disabled=no`;
+
+                if (uptime) {
+                    command += ` limit-uptime="${uptime}"`;
+                }
+
+                if (codeType === 'username-password') {
+                    const password = generateCode(pinLength, charTypeSelect.val(), customCharsInput.val());
+                    command += ` password="${password}"`;
+
+                    if (trafficLimit) {
+                        command += ` limit-bytes-total="${trafficLimit}M"`;
+                    }
+
+                    const codeCard = $('<div>').addClass('code-card');
+                    const codeElement = $('<div>').addClass('code');
+                    codeElement.html(`<strong>Usuario:</strong> ${code}<br><strong>Contraseña:</strong> ${password}<br><strong>Precio:</strong> $${priceInput.val()}<br></strong> ${messageField.val()}`);
+                    codeCard.append(codeElement);
+                    codeContainer.append(codeCard);
+                } else {
+                    const codeCard = $('<div>').addClass('code-card');
+                    const codeElement = $('<div>').addClass('code');
+                    codeElement.html(`<strong>PIN:</strong> ${code}<br><strong>Precio:</strong> $${priceInput.val()}<br><strong></strong> ${messageField.val()}`);
+                    codeCard.append(codeElement);
+                    codeContainer.append(codeCard);
+
+                    if (trafficLimit) {
+                        command += ` limit-bytes-total="${trafficLimit}M"`;
+                    }
+                }
+
+                command += '\n';
+                list += command;
+            }
+
+            generatedList.val(list);
+        }
+
+        function copyToClipboard() {
+            const textarea = $('#generated-list');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Script MikroTik copiado al portapapeles.');
+        }
+
+        function downloadScript() {
+            const scriptText = $('#generated-list').val();
+            const blob = new Blob([scriptText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = $('<a>').attr('href', url).attr('download', 'mikrotik_script.rsc');
+            $('body').append(a);
+            a[0].click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function printCodes() {
+            const unwantedElements = $('button, textarea, h2, .group, #generated-list, #copyright');
+            unwantedElements.each(function () {
+                $(this).hide();
+            });
+
+            const qrCodes = $('.qr-code');
+            qrCodes.each(function () {
+                $(this).hide();
+            });
+
+            window.print();
+
+            unwantedElements.each(function () {
+                $(this).show();
+            });
+        }
+
+        function limpiarTodo() {
+            $('#quantity').val('0');
+            $('#hotspot-server').val('all');
+            $('#traffic-limit').val('0');
+            $('#price').val('0');
+            $('#message-field').val('');
+            $('#profile').val('TiempoCorrido');
+            $('#char-type').val('numeric');
+            $('#pin-length').val(4);
+            $('#uptime-days').val(0);
+            $('#uptime-hours').val(0);
+            $('#uptime-minutes').val(0);
+            $('#uptime-seconds').val(0);
+            $('#generated-list, #code-container').empty();
+            $('#custom-profile-input, #custom-chars-input').val('');
+            $('#custom-profile, #custom-chars').hide();
+        }
+
+        $('#char-type').on('change', function () {
+            handleCharTypeChange();
+        });
+
+        $('#pin-length').on('input', function () {
+            $('#pin-length-label').text($(this).val());
+        });
+    </script>
+</body>
+
+</html>
